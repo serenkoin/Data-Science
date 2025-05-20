@@ -49,7 +49,8 @@ limit 10;
 --Каждой колонке задайте наименование на русском языке.
 
 select c.last_name || ' ' || c.first_name as "Фамилия и имя", 
-       c.email as "Электронная почта", CHAR_LENGTH(c.email) as "Длина Email",
+       c.email as "Электронная почта",
+       CHAR_LENGTH(c.email) as "Длина Email",
        c.last_update::date as "Дата"
 from customer c;
 
@@ -57,7 +58,9 @@ from customer c;
 --Выведите одним запросом только активных покупателей, имена которых KELLY или WILLIE.
 --Все буквы в фамилии и имени из верхнего регистра должны быть переведены в нижний регистр.
 
-select lower(c.last_name) as last_name, lower(c.first_name) as first_name
+select 
+	lower(c.last_name) as last_name, 
+	lower(c.first_name) as first_name
 from customer c 
 where c.active = 1 and
       c.first_name in ('KELLY', 'WILLIE');
@@ -69,7 +72,12 @@ where c.active = 1 and
 --и стоимость аренды указана от 0.00 до 3.00 включительно, 
 --а также фильмы c рейтингом "PG-13" и стоимостью аренды больше или равной 4.00.
 
-select f.film_id, f.title, f.description, f.rating, f.rental_rate
+select 
+	f.film_id, 
+	f.title, 
+	f.description, 
+	f.rating, 
+	f.rental_rate
 from film f
 where (f.rating = 'R' and f.rental_rate between 0.00 and 3.00) or
 	  (f.rating = 'PG-13' and f.rental_rate >= 4.00);
@@ -77,7 +85,10 @@ where (f.rating = 'R' and f.rental_rate between 0.00 and 3.00) or
 --ЗАДАНИЕ №2
 --Получите информацию о трёх фильмах с самым длинным описанием фильма.
 
-select f.film_id, f.title, f.description
+select 
+	f.film_id, 
+	f.title, 
+	f.description
 from film f
 order by LENGTH(f.description) desc
 limit 3;
@@ -90,8 +101,15 @@ limit 3;
 SELECT 
     customer_id,
     email,  
-    SUBSTRING(email FOR STRPOS(email, '@')) "Email before @", 
+    SUBSTRING(email FOR STRPOS(email, '@') - 1) "Email before @", 
     SUBSTRING(email FROM STRPOS(email, '@') + 1) "Email after @"
+FROM customer;
+
+SELECT 
+    customer_id,
+    email,  
+    split_part(email, '@', 1) "Email before @", 
+    split_part(email, '@', 2) "Email after @"
 FROM customer;
 
 --ЗАДАНИЕ №4
@@ -101,10 +119,16 @@ FROM customer;
 SELECT 
    customer_id, 
    email,  
-   SUBSTRING(email from 1 FOR 1) || lower(SUBSTRING(email from 2 FOR STRPOS(email, '@') - 2)) "Email before @", 
-   UPPER(SUBSTRING(email FROM STRPOS(email, '@') + 1 FOR 1))||SUBSTRING(email FROM STRPOS(email, '@') + 2) "Email after @"
+   upper(SUBSTRING(email from 1 FOR 1)) || lower(SUBSTRING(email from 2 FOR STRPOS(email, '@') - 2)) "Email before @", 
+   UPPER(SUBSTRING(email FROM STRPOS(email, '@') + 1 FOR 1))|| lower(SUBSTRING(email FROM STRPOS(email, '@') + 2)) "Email after @"
 FROM customer;
 
+SELECT 
+    customer_id,
+    email,  
+    upper(left(split_part(email, '@', 1), 1)) || lower (right(split_part(email, '@', 1), -1)) "Email before @", 
+    upper(left(split_part(email, '@', 2), 1)) || lower (right(split_part(email, '@', 2), -1)) "Email after @"
+FROM customer;
 
 --======== ДОПОЛНИТЕЛЬНАЯ ЧАСТЬ 2==============
 
@@ -113,8 +137,11 @@ FROM customer;
 --описание, год релиза. Переименуйте поля так, чтобы все они
 --начинались со слова Film (FilmTitle вместо title и т. п.)
 
-SELECT film_id AS "Filmfilm_id", title AS "Filmtitle",
-description AS "Filmdescriprion", release_year AS "Filmrelease_year"
+SELECT 
+	film_id Filmfilm_id, 
+	title Filmtitle,
+	description Filmdescriprion, 
+	release_year Filmrelease_year
 FROM film;
 
 --ЗАДАНИЕ №2
@@ -123,13 +150,17 @@ FROM film;
 --на этот промежуток времени. Для каждого фильма из таблицы 
 --film получите стоимость его аренды в день
 
-SELECT title, rental_rate/rental_duration AS cost_per_day
+SELECT 
+	title, 
+	rental_rate/rental_duration AS cost_per_day
 FROM film;
 
 --ЗАДАНИЕ №3
 --Отсортировать список фильмов по убыванию стоимости за день аренды
 
-SELECT title, rental_rate/rental_duration AS cost_per_day
+SELECT 
+	title, 
+	rental_rate/rental_duration AS cost_per_day
 FROM film
 order by cost_per_day desc;
 
@@ -142,6 +173,9 @@ FROM film;
 --ЗАДАНИЕ №5
 --Вывести весь список фильмов имеющий рейтинг 'PG-13'
 
-SELECT title, release_year, rating
+SELECT 
+	title, 
+	release_year, 
+	rating
 FROM film
 WHERE rating = 'PG-13';
