@@ -28,7 +28,7 @@ order by city;
 
 select p.payment_id, p.payment_date, p.amount
 from payment p 
-where (p.payment_date::date between '2005.06.17' and '2005.06.19') and
+where (date(p.payment_date) between '2005-06-17 00:00:00' and '2005-06-19 23:59:59') and
        p.amount > 1.00
 order by p.payment_date;
 
